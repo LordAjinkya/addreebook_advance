@@ -1,7 +1,14 @@
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
+import com.opencsv.CSVReader;
+import com.opencsv.CSVReaderBuilder;
+import com.opencsv.bean.StatefulBeanToCsv;
+import com.opencsv.bean.StatefulBeanToCsvBuilder;
+import com.opencsv.exceptions.CsvDataTypeMismatchException;
+import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
+import com.opencsv.exceptions.CsvValidationException;
+
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -208,11 +215,40 @@ public class Addressbookmain {
             e.printStackTrace();
         }
     }
+///write data to csv
+    public static void writeDataToCSV() throws IOException, CsvRequiredFieldEmptyException, CsvDataTypeMismatchException{
+        try (Writer writer = Files.newBufferedWriter(Paths.get("person_details.csv"));) {
+            StatefulBeanToCsvBuilder<Contacts> builder = new StatefulBeanToCsvBuilder<>(writer);
+            StatefulBeanToCsv<Contacts> beanWriter = builder.build();
+            beanWriter.write(data);
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    ///read to csv
+    public static void readDataFromCSV() throws IOException {
+        try (Reader reader = Files.newBufferedReader(Paths.get("person_details.csv"));
+             CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(1).build();){
+            String[] nextRecord;
+            while ((nextRecord = csvReader.readNext()) != null) {
+                System.out.println("First Name = " + nextRecord[3]);
+                System.out.println("Last Name = " + nextRecord[4]);
+                System.out.println("Address = " + nextRecord[0]);
+                System.out.println("City = " + nextRecord[1]);
+                System.out.println("State = " + nextRecord[6]);
+                System.out.println("Email = " + nextRecord[2]);
+                System.out.println("Phone Number = " + nextRecord[5]);
+                System.out.println("Zip Code = " + nextRecord[7]);
+            }
+        } catch (CsvValidationException e) {
+            e.printStackTrace();
+        }
+    }
 
 
 
-
-
+//main menu to operate all the functions performed in differeent methods
     public static void Menu() {
         int choice;
         while (true) {
@@ -254,6 +290,24 @@ public class Addressbookmain {
                     break;
 
                 case 12:
+                    try {
+                        writeDataToCSV();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } catch (CsvRequiredFieldEmptyException e) {
+                        e.printStackTrace();
+                    } catch (CsvDataTypeMismatchException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                case 13:
+                    try {
+                        readDataFromCSV();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                case 14:
                     System.exit(0);
                     break;
 
