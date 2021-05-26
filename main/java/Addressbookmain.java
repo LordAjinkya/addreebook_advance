@@ -217,7 +217,7 @@ public class Addressbookmain {
     }
 ///write data to csv
     public static void writeDataToCSV() throws IOException, CsvRequiredFieldEmptyException, CsvDataTypeMismatchException{
-        try (Writer writer = Files.newBufferedWriter(Paths.get("person_details.csv"));) {
+        try (Writer writer = Files.newBufferedWriter(Paths.get("C:\\Users\\ajink\\IdeaProjects\\system_of_addressbook\\src\\main\\resources\\person_details.csv"));) {
             StatefulBeanToCsvBuilder<Contacts> builder = new StatefulBeanToCsvBuilder<>(writer);
             StatefulBeanToCsv<Contacts> beanWriter = builder.build();
             beanWriter.write(data);
@@ -228,7 +228,7 @@ public class Addressbookmain {
     }
     ///read to csv
     public static void readDataFromCSV() throws IOException {
-        try (Reader reader = Files.newBufferedReader(Paths.get("person_details.csv"));
+        try (Reader reader = Files.newBufferedReader(Paths.get("C:\\Users\\ajink\\IdeaProjects\\system_of_addressbook\\src\\main\\resources\\person_details.csv"));
              CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(1).build();){
             String[] nextRecord;
             while ((nextRecord = csvReader.readNext()) != null) {
