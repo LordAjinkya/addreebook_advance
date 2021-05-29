@@ -1,3 +1,4 @@
+import com.google.gson.Gson;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.opencsv.bean.StatefulBeanToCsv;
@@ -6,8 +7,10 @@ import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 import com.opencsv.exceptions.CsvValidationException;
 
+
 import java.io.*;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -245,6 +248,38 @@ public class Addressbookmain {
             e.printStackTrace();
         }
     }
+    //write to json
+    public static void writeDataToJSon() throws IOException {
+        {
+            Path filePath = Paths.get("C:\\Users\\ajink\\IdeaProjects\\system_of_addressbook\\src\\main\\resources\\persondetails.json");
+            Gson gson = new Gson();
+            String json = gson.toJson(data);
+            FileWriter writer = new FileWriter(String.valueOf(filePath));
+            writer.write(json);
+            writer.close();
+        }
+    }
+    // Read from JSON
+    public static void readDataFromJson() throws IOException {
+        ArrayList<Contacts> data = null;
+        Path filePath = Paths.get("C:\\Users\\ajink\\IdeaProjects\\system_of_addressbook\\src\\main\\resources\\persondetails.json");
+        try (Reader reader = Files.newBufferedReader(filePath);) {
+            Gson gson = new Gson();
+            data = new ArrayList<Contacts>(Arrays.asList(gson.fromJson(reader, Contacts[].class)));
+            for (Contacts contact : data) {
+                System.out.println("Firstname : " + contact.getFirstName());
+                System.out.println("Lastname : " + contact.getLastName());
+                System.out.println("Address : " + contact.getAddress());
+                System.out.println("City : " + contact.getCity());
+                System.out.println("State : " + contact.getState());
+                System.out.println("Zip Code : " + contact.getZip());
+                System.out.println("Phone number : " + contact.getMobNo());
+                System.out.println("Email : " + contact.getEmail());
+
+            }
+
+        }
+    }
 
 
 
@@ -308,6 +343,19 @@ public class Addressbookmain {
                     }
                     break;
                 case 14:
+                    try {
+                        writeDataToJSon();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                case 15:
+                    try {
+                        readDataFromJson();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                case 16:
                     System.exit(0);
                     break;
 
