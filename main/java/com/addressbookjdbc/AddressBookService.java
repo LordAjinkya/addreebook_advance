@@ -12,7 +12,9 @@ public class AddressBookService {
     private static AddressBookDBService addressBookDBService;
 
 
-    public AddressBookService(){}
+    public AddressBookService(){
+        addressBookDBService= AddressBookDBService.getInstance();
+    }
 
     public List<AddressBookData> readAddressBookData(IOService ioservice) throws AddressBookException {
         if (ioservice.equals(IOService.DB_IO))
@@ -40,5 +42,9 @@ public class AddressBookService {
     //pass the data in a list to read the attributes
     public List<AddressBookData> readEmployeePayrollDataForDataRange(LocalDate startDate, LocalDate endDate) throws AddressBookException {
         return addressBookDBService.getEmployeePayrollDataForDateRange(startDate,endDate);
+    }
+    //method to read contacts by city
+    public int readContactByCity(String city) throws AddressBookException {
+        return addressBookDBService.getCountByCity(city);
     }
 }

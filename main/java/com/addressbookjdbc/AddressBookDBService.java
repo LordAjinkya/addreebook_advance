@@ -10,15 +10,9 @@ public class AddressBookDBService {
     private static AddressBookDBService addressBookDBService;
     private List<AddressBookData> addressBookData = new ArrayList<>();
 
-    AddressBookDBService() {
-    }
 
-    public static AddressBookDBService getAddressBookDBService() {
-        return addressBookDBService;
-    }
 
-    public static void setAddressBookDBService(AddressBookDBService addressBookDBService) {
-        AddressBookDBService.addressBookDBService = addressBookDBService;
+     AddressBookDBService() {
     }
 
 
@@ -33,6 +27,12 @@ public class AddressBookDBService {
         return con;
 
     }
+    public static AddressBookDBService getInstance() {
+        if (addressBookDBService == null)
+            addressBookDBService = new AddressBookDBService();
+        return addressBookDBService;
+    }
+
 
     public List<AddressBookData> readData() throws AddressBookException {
         String query="select * from addressbook";
@@ -41,6 +41,8 @@ public class AddressBookDBService {
 
     private List<AddressBookData> getAddressBookDataUsingDB(String sql) throws AddressBookException {
         List<AddressBookData> addressBookData;
+        String query;
+        query = "select * from addressbook";
         try (Connection connection = this.getConnection()) {
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(sql);
@@ -70,8 +72,18 @@ public class AddressBookDBService {
         }
         return addressBookData;
     }
-    public int updateAddressBookData(String First_Name, String Address) throws AddressBookException {
-        String query = String.format("update addressbook set Address = '%s' where First_Name = '%s';", Address, First_Name);
+
+    private void prepareAddressBookStatement() throws AddressBookException {
+        try {
+            Connection connection = this.getConnection();
+            String query = "select * from addressbook where first_name = ?";
+            addressBookPreparedStatement = connection.prepareStatement(query);
+        } catch (SQLException e) {
+            throw new AddressBookException(e.getMessage(), AddressBookException.ExceptionType.DATABASE_EXCEPTION);
+        }
+    }
+    public int updateAddressBookData(String firstname, String address) throws AddressBookException {
+        String query = String.format("update addressbook set address = '%s' where first_name = '%s';", address, firstname);
         try (Connection connection = this.getConnection()) {
             PreparedStatement preparedStatement = connection.prepareStatement(query);
             return preparedStatement.executeUpdate(query);
@@ -80,11 +92,11 @@ public class AddressBookDBService {
         }
     }
 
-    public List<AddressBookData> getAddressBookData(String firstname) throws AddressBookException {
-//        if (this.addressBookPreparedStatement == null)
-//            this.prepareAddressBookStatement();
+    public List<AddressBookData> getAddressBookData(String First_Name) throws AddressBookException {
+        if (this.addressBookPreparedStatement == null)
+           this.prepareAddressBookStatement();
         try {
-            addressBookPreparedStatement.setString(1, firstname);
+            addressBookPreparedStatement.setString(1, First_Name);
             ResultSet resultSet = addressBookPreparedStatement.executeQuery();
             addressBookData = this.getAddressBookDetails(resultSet);
         } catch (SQLException e) {
@@ -97,5 +109,14 @@ public class AddressBookDBService {
     public List<AddressBookData> getEmployeePayrollDataForDateRange(LocalDate startDate, LocalDate endDate) throws AddressBookException {
         String sql = String.format("SELECT * FROM  addressbook WHERE date_added BETWEEN '%s' AND '%s';", Date.valueOf(startDate), Date.valueOf(endDate));//passing the query in string format
         return this.getAddressBookDataUsingDB(sql);
+    }
+
+    public int getCountByCity(String city) throws AddressBookException {
+        int count = 0;
+        String sql = String.format("select * from addressbook where city = '%s' ;", city);//passing the query in string format
+        addressBookData=this.getAddressBookDataUsingDB(sql);
+        count = (int) addressBookData.stream().count();
+
+        return count;
     }
 }

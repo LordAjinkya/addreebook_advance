@@ -29,6 +29,13 @@ public class AddressbookJDBCTest {
         LocalDate startDate = LocalDate.of(2020,01,02);
         LocalDate endDate = LocalDate.now();
         List<AddressBookData> addressBookData = addressBookService.readEmployeePayrollDataForDataRange(startDate,endDate);
-        Assertions.assertEquals(5, addressBookData.size());
+        Assertions.assertEquals(3, addressBookData.size());
+    }
+    @Test
+    public void givenAddressBook_WhenRetrieved_ShouldReturnCountOfCity() throws AddressBookException {
+        AddressBookService addressBookService = new AddressBookService();
+        addressBookService.readAddressBookData(AddressBookService.IOService.DB_IO);
+        int count =addressBookService.readContactByCity("Parbhani");
+        Assertions.assertEquals(1, count);
     }
 }
