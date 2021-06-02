@@ -100,7 +100,7 @@ public class Contacts {
                 ", email='" + email + '\'' +
                 '}';
     }
-    public Contacts() {
+    public Contacts(String ajinkya, String narale, String dhantoli, String bhandara, String katol, int i, String s) {
 
     }
     public void showContactsDetails(){
