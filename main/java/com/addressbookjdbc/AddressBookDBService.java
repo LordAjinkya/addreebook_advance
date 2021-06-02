@@ -1,6 +1,7 @@
 package com.addressbookjdbc;
 import java.math.BigDecimal;
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -91,5 +92,10 @@ public class AddressBookDBService {
         }
         System.out.println(addressBookData);
         return addressBookData;
+    }
+//using localdate class
+    public List<AddressBookData> getEmployeePayrollDataForDateRange(LocalDate startDate, LocalDate endDate) throws AddressBookException {
+        String sql = String.format("SELECT * FROM  addressbook WHERE date_added BETWEEN '%s' AND '%s';", Date.valueOf(startDate), Date.valueOf(endDate));//passing the query in string format
+        return this.getAddressBookDataUsingDB(sql);
     }
 }
