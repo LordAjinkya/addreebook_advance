@@ -5,8 +5,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AddressBookDBService {
+    private PreparedStatement addressBookPreparedStatement;
+    private static AddressBookDBService addressBookDBService;
+    private List<AddressBookData> addressBookData = new ArrayList<>();
+
     AddressBookDBService() {
     }
+
+    public static AddressBookDBService getAddressBookDBService() {
+        return addressBookDBService;
+    }
+
+    public static void setAddressBookDBService(AddressBookDBService addressBookDBService) {
+        AddressBookDBService.addressBookDBService = addressBookDBService;
+    }
+
 
     private Connection getConnection() throws SQLException {
         String jdbcURL = "jdbc:mysql://localhost:3306/address_book_service?useSSL=false";
@@ -38,7 +51,7 @@ public class AddressBookDBService {
     }
 
     private List<AddressBookData> getAddressBookDetails(ResultSet resultSet) throws AddressBookException {
-        List<AddressBookData> addressBookData = new ArrayList<>();
+   //     List<AddressBookData> addressBookData = new ArrayList<>();
         try {
             while (resultSet.next()) {
                 String First_Name = resultSet.getString("First_Name");
@@ -54,6 +67,29 @@ public class AddressBookDBService {
         } catch (SQLException e) {
             throw new AddressBookException(e.getMessage(), AddressBookException.ExceptionType.DATABASE_EXCEPTION);
         }
+        return addressBookData;
+    }
+    public int updateAddressBookData(String First_Name, String Address) throws AddressBookException {
+        String query = String.format("update addressbook set Address = '%s' where First_Name = '%s';", Address, First_Name);
+        try (Connection connection = this.getConnection()) {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            return preparedStatement.executeUpdate(query);
+        } catch (SQLException e) {
+            throw new AddressBookException(e.getMessage(), AddressBookException.ExceptionType.CONNECTION_FAILED);
+        }
+    }
+
+    public List<AddressBookData> getAddressBookData(String firstname) throws AddressBookException {
+//        if (this.addressBookPreparedStatement == null)
+//            this.prepareAddressBookStatement();
+        try {
+            addressBookPreparedStatement.setString(1, firstname);
+            ResultSet resultSet = addressBookPreparedStatement.executeQuery();
+            addressBookData = this.getAddressBookDetails(resultSet);
+        } catch (SQLException e) {
+            throw new AddressBookException(e.getMessage(), AddressBookException.ExceptionType.CONNECTION_FAILED);
+        }
+        System.out.println(addressBookData);
         return addressBookData;
     }
 }
