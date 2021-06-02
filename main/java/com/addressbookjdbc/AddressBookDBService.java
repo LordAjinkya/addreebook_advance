@@ -7,7 +7,7 @@ import java.util.List;
 public class AddressBookDBService {
     AddressBookDBService() {
     }
-
+//create connection with database in mysql
     private Connection getConnection() throws SQLException {
         String jdbcURL = "jdbc:mysql://localhost:3306/address_book_service?useSSL=false";
         String username = "root";
@@ -19,7 +19,7 @@ public class AddressBookDBService {
         return con;
 
     }
-
+//pass the address book datato read in the list
     public List<AddressBookData> readData() throws AddressBookException {
         String query="select * from addressbook";
         return getAddressBookDataUsingDB(query);
@@ -28,8 +28,9 @@ public class AddressBookDBService {
     private List<AddressBookData> getAddressBookDataUsingDB(String sql) throws AddressBookException {
         List<AddressBookData> addressBookData;
         try (Connection connection = this.getConnection()) {
-            Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery(sql);
+            
+            Statement statement = connection.createStatement();// Statement interface to provide methods to execute queries with the database
+            ResultSet resultSet = statement.executeQuery(sql); //returns the object of ResultSet.
             addressBookData = this.getAddressBookDetails(resultSet);
         } catch (SQLException e) {
             throw new AddressBookException(e.getMessage(), AddressBookException.ExceptionType.DATABASE_EXCEPTION);
